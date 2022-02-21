@@ -1,5 +1,5 @@
 cmake_minimum_required (VERSION 3.8)
-project(project_Dummy)
+project(project_PyroProgression)
 add_subdirectory(CWSDK)
-add_library (Dummy SHARED "main.cpp")
-target_link_libraries (Dummy LINK_PUBLIC CWSDK)
+add_library (PyroProgression SHARED "main.cpp")
+target_link_libraries (PyroProgression LINK_PUBLIC CWSDK)
