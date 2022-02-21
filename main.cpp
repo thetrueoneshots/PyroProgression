@@ -5,6 +5,7 @@
 
 // Includes for the self written hooks.
 // For example: #include "src/hooks/a_hook.h" 
+#include "src/XPOverwrite.h"
 
 /* Mod class containing all the functions for the mod.
 */
@@ -110,7 +111,6 @@ class Mod : GenericMod {
 			xpText.text = std::wstring(L"+") + std::to_wstring(xp_gain) + std::wstring(L" XP");;
 			xpText.field_60 = 0;
 
-			//game->textfx_list.push_back(xpText);
 			for (int i = 0; i < 4; i++)
 			{
 				fx_list.push_back(xpText);
@@ -125,6 +125,7 @@ class Mod : GenericMod {
 	 * @return	{void}
 	*/
 	virtual void Initialize() override {
+		Setup_XP_Overwrite();
 		return;
 	}
 };

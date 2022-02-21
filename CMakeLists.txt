@@ -1,5 +1,5 @@
 cmake_minimum_required (VERSION 3.8)
 project(project_PyroProgression)
 add_subdirectory(CWSDK)
-add_library (PyroProgression SHARED "main.cpp")
+add_library (PyroProgression SHARED "main.cpp" "src/XPOverwrite.h")
 target_link_libraries (PyroProgression LINK_PUBLIC CWSDK)
