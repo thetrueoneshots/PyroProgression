@@ -10,12 +10,21 @@
 */
 class Mod : GenericMod {
 
+	std::vector<cube::TextFX> fx_list;
 	/* Hook for the chat function. Triggers when a user sends something in the chat.
 	 * @param	{std::wstring*} message
 	 * @return	{int}
 	*/
 	virtual int OnChat(std::wstring* message) override {
 		return 0;
+	}
+
+	virtual void OnGameUpdate(cube::Game* game) override {
+		if (fx_list.size() > 0)
+		{
+			game->textfx_list.push_back(fx_list.at(0));
+			fx_list.erase(fx_list.begin());
+		}
 	}
 
 	/* Function hook that gets called every game tick.
@@ -53,22 +62,24 @@ class Mod : GenericMod {
 		{
 			entity_data->XP -= player->GetXPForLevelup();
 			entity_data->level += 1;
+
+			game->PlaySoundEffect(cube::Game::SoundEffect::sound_level_up);
+
+			FloatRGBA purple(0.65f, 0.40f, 1.0f, 1.0f);
+
+			cube::TextFX xpText = cube::TextFX();
+			xpText.position = player->entity_data.position;
+			xpText.animation_length = 3000;
+			xpText.distance_to_fall = -500;
+			xpText.color = purple;
+			xpText.size = 64;
+			xpText.offset_2d = FloatVector2(0, 0);
+			xpText.text = L"LEVEL UP!\n";
+			xpText.field_60 = 0;
+
+			game->textfx_list.push_back(xpText);
+			game->PrintMessage(L"LEVEL UP!\n", &purple);
 		}
-
-
-		// NOT WORKING!! Probably because the list is emptied beforehand
-		FloatRGBA purple(0.65f, 0.40f, 1.0f, 1.0f);
-
-		cube::TextFX xpText = cube::TextFX();
-		xpText.position = player->entity_data.position;
-		xpText.animation_time = 50000;
-		xpText.animation_length = 3000;
-		xpText.color = purple;
-		xpText.size = 16;
-		xpText.offset_2d = FloatVector2(5, -100);
-		xpText.text = std::wstring(L"+") + std::to_wstring(1) + std::wstring(L" XP");
-
-		game->textfx_list.push_back(xpText);
 
 		return;
 	}
@@ -90,15 +101,20 @@ class Mod : GenericMod {
 			game->PrintMessage(buffer, &purple);
 
 			cube::TextFX xpText = cube::TextFX();
-			xpText.position = player->entity_data.position;
-			xpText.animation_time = 50000;
+			xpText.position = player->entity_data.position + LongVector3(std::rand() % (cube::DOTS_PER_BLOCK * 50) , std::rand() % (cube::DOTS_PER_BLOCK * 50), std::rand() % (cube::DOTS_PER_BLOCK * 50));
 			xpText.animation_length = 3000;
+			xpText.distance_to_fall = -100;
 			xpText.color = purple;
-			xpText.size = 16;
-			xpText.offset_2d = FloatVector2(5, -100);
-			xpText.text = std::wstring(L"+") + std::to_wstring(xp_gain) + std::wstring(L" XP");
+			xpText.size = 32;
+			xpText.offset_2d = FloatVector2(-50, -100);
+			xpText.text = std::wstring(L"+") + std::to_wstring(xp_gain) + std::wstring(L" XP");;
+			xpText.field_60 = 0;
 
-			game->textfx_list.push_back(xpText);
+			//game->textfx_list.push_back(xpText);
+			for (int i = 0; i < 4; i++)
+			{
+				fx_list.push_back(xpText);
+			}
 
 			player->entity_data.XP += xp_gain;
 		}
