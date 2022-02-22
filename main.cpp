@@ -1,4 +1,5 @@
 #include "main.h"
+#include <map>
 
 // Public variables.
 // For example: int number = 10;
@@ -11,7 +12,19 @@
 */
 class Mod : GenericMod {
 
-	std::vector<cube::TextFX> fx_list;
+	std::map<int, float> m_StatScaling;
+	enum STAT_TYPE : int {
+		ARMOR = 0,
+		CRIT,
+		ATK_POWER,
+		SPELL_POWER,
+		HASTE,
+		HEALTH,
+		RESISTANCE,
+		STAMINA,
+		MANA
+	};
+	std::vector<cube::TextFX> m_FXList;
 	/* Hook for the chat function. Triggers when a user sends something in the chat.
 	 * @param	{std::wstring*} message
 	 * @return	{int}
@@ -21,10 +34,10 @@ class Mod : GenericMod {
 	}
 
 	virtual void OnGameUpdate(cube::Game* game) override {
-		if (fx_list.size() > 0)
+		if (m_FXList.size() > 0)
 		{
-			game->textfx_list.push_back(fx_list.at(0));
-			fx_list.erase(fx_list.begin());
+			game->textfx_list.push_back(m_FXList.at(0));
+			m_FXList.erase(m_FXList.begin());
 		}
 	}
 
@@ -56,7 +69,6 @@ class Mod : GenericMod {
 		plasma::Node* node = game->gui.levelinfo_node;
 		node->SetVisibility(true);
 		node->Translate(game->width / 2, game->height, -200, -100);
-		
 
 		// Handle levelups
 		while (entity_data->XP >= player->GetXPForLevelup())
@@ -113,7 +125,7 @@ class Mod : GenericMod {
 
 			for (int i = 0; i < 4; i++)
 			{
-				fx_list.push_back(xpText);
+				m_FXList.push_back(xpText);
 			}
 
 			player->entity_data.XP += xp_gain;
@@ -126,7 +138,73 @@ class Mod : GenericMod {
 	*/
 	virtual void Initialize() override {
 		Setup_XP_Overwrite();
+
+		// Defense
+		m_StatScaling.insert_or_assign(STAT_TYPE::HEALTH, 5);
+		m_StatScaling.insert_or_assign(STAT_TYPE::ARMOR, 0.5f);
+		m_StatScaling.insert_or_assign(STAT_TYPE::RESISTANCE, 0.5f);
+		
+		// Offense
+		m_StatScaling.insert_or_assign(STAT_TYPE::ATK_POWER, 0.5f);
+		m_StatScaling.insert_or_assign(STAT_TYPE::SPELL_POWER, 0.5f);
+		m_StatScaling.insert_or_assign(STAT_TYPE::CRIT, 0.005f);
+		m_StatScaling.insert_or_assign(STAT_TYPE::HASTE, 0.005f);
+		
+		// Utility
+		m_StatScaling.insert_or_assign(STAT_TYPE::STAMINA, 0.05f);
+		m_StatScaling.insert_or_assign(STAT_TYPE::MANA, 0.05f);
+
 		return;
+	}
+
+	void ApplyStatBuff(cube::Creature* creature, float* stat, STAT_TYPE type)
+	{
+		cube::Game* game = cube::GetGame();
+		if (!game)
+		{
+			return;
+		}
+
+		if (creature->id == game->GetPlayer()->id)
+		{
+			*stat += m_StatScaling.at(type) * creature->entity_data.level;
+		}
+	}
+
+	virtual void OnCreatureArmorCalculated(cube::Creature* creature, float* armor) override {
+		ApplyStatBuff(creature, armor, STAT_TYPE::ARMOR);
+	}
+
+	virtual void OnCreatureCriticalCalculated(cube::Creature* creature, float* critical) override {
+		ApplyStatBuff(creature, critical, STAT_TYPE::CRIT);
+	}
+
+	virtual void OnCreatureAttackPowerCalculated(cube::Creature* creature, float* power) override {
+		ApplyStatBuff(creature, power, STAT_TYPE::ATK_POWER);
+	}
+
+	virtual void OnCreatureSpellPowerCalculated(cube::Creature* creature, float* power) override {
+		ApplyStatBuff(creature, power, STAT_TYPE::SPELL_POWER);
+	}
+
+	virtual void OnCreatureHasteCalculated(cube::Creature* creature, float* haste) override {
+		ApplyStatBuff(creature, haste, STAT_TYPE::HASTE);
+	}
+
+	virtual void OnCreatureHPCalculated(cube::Creature* creature, float* hp) override {
+		ApplyStatBuff(creature, hp, STAT_TYPE::HEALTH);
+	}
+
+	virtual void OnCreatureResistanceCalculated(cube::Creature* creature, float* resistance) override {
+		ApplyStatBuff(creature, resistance, STAT_TYPE::RESISTANCE);
+	}
+
+	virtual void OnCreatureRegenerationCalculated(cube::Creature* creature, float* regeneration) override {
+		ApplyStatBuff(creature, regeneration, STAT_TYPE::STAMINA);
+	}
+
+	virtual void OnCreatureManaGenerationCalculated(cube::Creature* creature, float* manaGeneration) override {
+		ApplyStatBuff(creature, manaGeneration, STAT_TYPE::MANA);
 	}
 };
 
