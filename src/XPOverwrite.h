@@ -1,22 +1,5 @@
 #pragma once
-#define MODLOADER 0
 #include "../CWSDK/cwsdk.h"
-
-void WriteFarJMP(void* source, void* destination) {
-	DWORD dwOldProtection;
-	VirtualProtect(source, 14, PAGE_EXECUTE_READWRITE, &dwOldProtection);
-	char* location = (char*)source;
-
-	// Far jump
-	*((UINT16*)&location[0]) = 0x25FF;
-
-	// mode
-	*((UINT32*)&location[2]) = 0x00000000;
-
-	*((UINT64*)&location[6]) = (UINT64)destination;
-
-	VirtualProtect(location, 14, dwOldProtection, &dwOldProtection);
-}
 
 extern "C" int XP_Overwrite(int level)
 {

@@ -6,7 +6,9 @@
 
 // Includes for the self written hooks.
 // For example: #include "src/hooks/a_hook.h" 
+#include "src/utility.h"
 #include "src/XPOverwrite.h"
+#include "src/LevelDisplayOverwrite.h"
 
 /* Mod class containing all the functions for the mod.
 */
@@ -94,6 +96,15 @@ class Mod : GenericMod {
 			game->PrintMessage(L"LEVEL UP!\n", &purple);
 		}
 
+		// Set starting region if not set
+		// Todo: Change if world settings are implemented
+		cube::Item* storage = &entity_data->equipment.unk_item;
+		if (storage->modifier == 0)
+		{
+			storage->modifier = 1;
+			storage->region = entity_data->current_region;
+		}
+
 		return;
 	}
 
@@ -107,7 +118,7 @@ class Mod : GenericMod {
 		if (player->id == attacker->id || player->pet_id == attacker->id)
 		{
 			FloatRGBA purple(0.65f, 0.40f, 1.0f, 1.0f);
-			int xp_gain = creature->entity_data.level + 1;
+			int xp_gain = GetLevel(creature);
 
 			wchar_t buffer[250];
 			swprintf_s(buffer, 250, L"You gain %d xp.\n", xp_gain);
@@ -138,6 +149,7 @@ class Mod : GenericMod {
 	*/
 	virtual void Initialize() override {
 		Setup_XP_Overwrite();
+		Setup_LevelDisplayOverwrite();
 
 		// Defense
 		m_StatScaling.insert_or_assign(STAT_TYPE::HEALTH, 5);
@@ -171,32 +183,47 @@ class Mod : GenericMod {
 		}
 	}
 
+	void ApplyCreatureBuff(cube::Creature* creature, float* stat, STAT_TYPE type)
+	{
+		if (creature->entity_data.hostility_type != cube::Creature::EntityBehaviour::Player)
+		{
+			*stat += m_StatScaling.at(type) * GetLevel(creature);
+		}
+	}
+
 	virtual void OnCreatureArmorCalculated(cube::Creature* creature, float* armor) override {
 		ApplyStatBuff(creature, armor, STAT_TYPE::ARMOR);
+		ApplyCreatureBuff(creature, armor, STAT_TYPE::ARMOR);
 	}
 
 	virtual void OnCreatureCriticalCalculated(cube::Creature* creature, float* critical) override {
 		ApplyStatBuff(creature, critical, STAT_TYPE::CRIT);
+		ApplyCreatureBuff(creature, critical, STAT_TYPE::CRIT);
 	}
 
 	virtual void OnCreatureAttackPowerCalculated(cube::Creature* creature, float* power) override {
 		ApplyStatBuff(creature, power, STAT_TYPE::ATK_POWER);
+		ApplyCreatureBuff(creature, power, STAT_TYPE::ATK_POWER);
 	}
 
 	virtual void OnCreatureSpellPowerCalculated(cube::Creature* creature, float* power) override {
 		ApplyStatBuff(creature, power, STAT_TYPE::SPELL_POWER);
+		ApplyCreatureBuff(creature, power, STAT_TYPE::SPELL_POWER);
 	}
 
 	virtual void OnCreatureHasteCalculated(cube::Creature* creature, float* haste) override {
 		ApplyStatBuff(creature, haste, STAT_TYPE::HASTE);
+		ApplyCreatureBuff(creature, haste, STAT_TYPE::HASTE);
 	}
 
 	virtual void OnCreatureHPCalculated(cube::Creature* creature, float* hp) override {
 		ApplyStatBuff(creature, hp, STAT_TYPE::HEALTH);
+		ApplyCreatureBuff(creature, hp, STAT_TYPE::HEALTH);
 	}
 
 	virtual void OnCreatureResistanceCalculated(cube::Creature* creature, float* resistance) override {
 		ApplyStatBuff(creature, resistance, STAT_TYPE::RESISTANCE);
+		ApplyCreatureBuff(creature, resistance, STAT_TYPE::RESISTANCE);
 	}
 
 	virtual void OnCreatureRegenerationCalculated(cube::Creature* creature, float* regeneration) override {
