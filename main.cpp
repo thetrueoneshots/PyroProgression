@@ -9,6 +9,8 @@
 #include "src/utility.h"
 #include "src/XPOverwrite.h"
 #include "src/LevelDisplayOverwrite.h"
+#include "src/GearScalingOverWrite.h"
+#include "src/GoldDropOverWrite.h"
 
 /* Mod class containing all the functions for the mod.
 */
@@ -26,6 +28,7 @@ class Mod : GenericMod {
 		STAMINA,
 		MANA
 	};
+
 	std::vector<cube::TextFX> m_FXList;
 	/* Hook for the chat function. Triggers when a user sends something in the chat.
 	 * @param	{std::wstring*} message
@@ -118,7 +121,7 @@ class Mod : GenericMod {
 		if (player->id == attacker->id || player->pet_id == attacker->id)
 		{
 			FloatRGBA purple(0.65f, 0.40f, 1.0f, 1.0f);
-			int xp_gain = GetLevel(creature);
+			int xp_gain = GetCreatureLevel(creature);
 
 			wchar_t buffer[250];
 			swprintf_s(buffer, 250, L"You gain %d xp.\n", xp_gain);
@@ -148,8 +151,10 @@ class Mod : GenericMod {
 	 * @return	{void}
 	*/
 	virtual void Initialize() override {
+		Setup_OverwriteGoldDrops();
 		Setup_XP_Overwrite();
 		Setup_LevelDisplayOverwrite();
+		Setup_GearScalingOverwrite();
 
 		// Defense
 		m_StatScaling.insert_or_assign(STAT_TYPE::HEALTH, 5);
@@ -187,7 +192,7 @@ class Mod : GenericMod {
 	{
 		if (creature->entity_data.hostility_type != cube::Creature::EntityBehaviour::Player)
 		{
-			*stat += m_StatScaling.at(type) * GetLevel(creature);
+			*stat += m_StatScaling.at(type) * GetCreatureLevel(creature);
 		}
 	}
 

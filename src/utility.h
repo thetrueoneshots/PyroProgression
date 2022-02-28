@@ -1,4 +1,5 @@
 #pragma once
 #include "cwsdk.h"
 
-int GetLevel(cube::Creature* creature);
+int GetItemLevel(cube::Item* item);
+int GetCreatureLevel(cube::Creature* creature);

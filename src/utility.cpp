@@ -1,6 +1,30 @@
 #include "utility.h"
 
-int GetLevel(cube::Creature* creature)
+int GetItemLevel(cube::Item* item)
+{
+	if (!item)
+	{
+		return 1;
+	}
+
+	cube::Game* game = cube::GetGame();
+	if (!game)
+	{
+		return item->rarity;
+	}
+
+	
+	IntVector2 base_region = game->GetPlayer()->entity_data.equipment.unk_item.region;
+	IntVector2 current_region = item->region;
+
+	int xDiv = std::abs(base_region.x - current_region.x);
+	int yDiv = std::abs(base_region.y - current_region.y);
+	int distance = std::max<int>(xDiv, yDiv);
+
+	return item->rarity + 1 + distance;
+}
+
+int GetCreatureLevel(cube::Creature* creature)
 {
 	cube::Game* game = cube::GetGame();
 	if (!game)
