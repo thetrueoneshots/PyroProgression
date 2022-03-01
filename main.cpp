@@ -146,6 +146,14 @@ class Mod : GenericMod {
 		}
 	}
 
+	virtual void OnGetItemBuyingPrice(cube::Item* item, int* price) override {
+		if (item->category >= 3 && item->category <= 9)
+		{
+			int level = GetItemLevel(item);
+			*price *= level;
+		}
+	}
+
 	/* Function hook that gets called on intialization of cubeworld.
 	 * [Note]:	cube::GetGame() is not yet available here!!
 	 * @return	{void}
