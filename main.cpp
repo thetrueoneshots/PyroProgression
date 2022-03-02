@@ -16,7 +16,9 @@
 */
 class Mod : GenericMod {
 
-	std::map<int, float> m_StatScaling;
+	std::map<int, float> m_PlayerScaling;
+	std::map<int, float> m_CreatureScaling;
+
 	enum STAT_TYPE : int {
 		ARMOR = 0,
 		CRIT,
@@ -121,7 +123,7 @@ class Mod : GenericMod {
 		if (player->id == attacker->id || player->pet_id == attacker->id)
 		{
 			FloatRGBA purple(0.65f, 0.40f, 1.0f, 1.0f);
-			int xp_gain = GetCreatureLevel(creature);
+			int xp_gain = GetCreatureLevel(creature) * (creature->entity_data.level + 1);
 
 			wchar_t buffer[250];
 			swprintf_s(buffer, 250, L"You gain %d xp.\n", xp_gain);
@@ -164,20 +166,37 @@ class Mod : GenericMod {
 		Setup_LevelDisplayOverwrite();
 		Setup_GearScalingOverwrite();
 
+		// ##### PLAYER ######
 		// Defense
-		m_StatScaling.insert_or_assign(STAT_TYPE::HEALTH, 5);
-		m_StatScaling.insert_or_assign(STAT_TYPE::ARMOR, 0.5f);
-		m_StatScaling.insert_or_assign(STAT_TYPE::RESISTANCE, 0.5f);
+		m_PlayerScaling.insert_or_assign(STAT_TYPE::HEALTH, 5);
+		m_PlayerScaling.insert_or_assign(STAT_TYPE::ARMOR, 0.5f);
+		m_PlayerScaling.insert_or_assign(STAT_TYPE::RESISTANCE, 0.5f);
 		
 		// Offense
-		m_StatScaling.insert_or_assign(STAT_TYPE::ATK_POWER, 0.5f);
-		m_StatScaling.insert_or_assign(STAT_TYPE::SPELL_POWER, 0.5f);
-		m_StatScaling.insert_or_assign(STAT_TYPE::CRIT, 0.005f);
-		m_StatScaling.insert_or_assign(STAT_TYPE::HASTE, 0.005f);
+		m_PlayerScaling.insert_or_assign(STAT_TYPE::ATK_POWER, 0.5f);
+		m_PlayerScaling.insert_or_assign(STAT_TYPE::SPELL_POWER, 0.5f);
+		m_PlayerScaling.insert_or_assign(STAT_TYPE::CRIT, 0.00001f);
+		m_PlayerScaling.insert_or_assign(STAT_TYPE::HASTE, 0.00001f);
 		
 		// Utility
-		m_StatScaling.insert_or_assign(STAT_TYPE::STAMINA, 0.05f);
-		m_StatScaling.insert_or_assign(STAT_TYPE::MANA, 0.05f);
+		m_PlayerScaling.insert_or_assign(STAT_TYPE::STAMINA, 0.05f);
+		m_PlayerScaling.insert_or_assign(STAT_TYPE::MANA, 0.05f);
+
+		// ##### CREATURE ######
+		// Defense
+		m_CreatureScaling.insert_or_assign(STAT_TYPE::HEALTH, 10);
+		m_CreatureScaling.insert_or_assign(STAT_TYPE::ARMOR, 2);
+		m_CreatureScaling.insert_or_assign(STAT_TYPE::RESISTANCE, 2);
+
+		// Offense
+		m_CreatureScaling.insert_or_assign(STAT_TYPE::ATK_POWER, 1);
+		m_CreatureScaling.insert_or_assign(STAT_TYPE::SPELL_POWER, 1);
+		m_CreatureScaling.insert_or_assign(STAT_TYPE::CRIT, 0);
+		m_CreatureScaling.insert_or_assign(STAT_TYPE::HASTE, 0);
+
+		// Utility
+		m_PlayerScaling.insert_or_assign(STAT_TYPE::STAMINA, 0);
+		m_PlayerScaling.insert_or_assign(STAT_TYPE::MANA, 0);
 
 		return;
 	}
@@ -192,7 +211,7 @@ class Mod : GenericMod {
 
 		if (creature->id == game->GetPlayer()->id)
 		{
-			*stat += m_StatScaling.at(type) * creature->entity_data.level;
+			*stat += m_PlayerScaling.at(type) * creature->entity_data.level;
 		}
 	}
 
@@ -200,7 +219,9 @@ class Mod : GenericMod {
 	{
 		if (creature->entity_data.hostility_type != cube::Creature::EntityBehaviour::Player)
 		{
-			*stat += m_StatScaling.at(type) * GetCreatureLevel(creature);
+			*stat /= creature->entity_data.level + 1;
+			*stat += m_CreatureScaling.at(type) * GetCreatureLevel(creature);
+			*stat *= creature->entity_data.level + 1;
 		}
 	}
 

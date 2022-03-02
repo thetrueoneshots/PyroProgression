@@ -21,7 +21,7 @@ int GetItemLevel(cube::Item* item)
 	int yDiv = std::abs(base_region.y - current_region.y);
 	int distance = std::max<int>(xDiv, yDiv);
 
-	return item->rarity + 1 + distance;
+	return 1 + distance;
 }
 
 int GetCreatureLevel(cube::Creature* creature)
@@ -35,6 +35,13 @@ int GetCreatureLevel(cube::Creature* creature)
 	IntVector2 base_region = game->GetPlayer()->entity_data.equipment.unk_item.region;
 	IntVector2 current_region = creature->entity_data.current_region;
 
+	// Spawned enemies apparently have no current region and that is still set to 0.
+	if (current_region == IntVector2(0, 0))
+	{
+		// Backup (hacky) method.
+		current_region = game->GetPlayer()->entity_data.current_region;
+	}
+
 	int xDiv = std::abs(base_region.x - current_region.x);
 	int yDiv = std::abs(base_region.y - current_region.y);
 	int distance = std::max<int>(xDiv, yDiv);
@@ -45,6 +52,6 @@ int GetCreatureLevel(cube::Creature* creature)
 	case cube::Creature::EntityBehaviour::Pet:
 		return creature->entity_data.level;
 	default:
-		return creature->entity_data.level + 1 + distance;
+		return 1 + distance;
 	}
 }

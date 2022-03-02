@@ -17,7 +17,6 @@ extern "C" void GetGoldDrops(cube::Creature * creature, float* gold)
 {
 	SetGoldDropValue(GetCreatureLevel(creature));
 
-	*gold *= 10;
 	if (*gold <= 0)
 	{
 		*gold = 1;

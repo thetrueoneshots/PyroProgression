@@ -32,7 +32,7 @@ extern "C" float GetGearScaling(cube::Item * item, cube::Creature* creature, int
 	cube::Game* game = cube::GetGame();
 	if (game && creature->entity_data.hostility_type == cube::Creature::EntityBehaviour::Player)
 	{
-		result += 0.25f * GetItemLevel(item);
+		result *= 1 + 0.05f * GetItemLevel(item);
 	}
 	return result;
 }
