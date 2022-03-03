@@ -119,11 +119,32 @@ class Mod : GenericMod {
 			return;
 		}
 
+		// Skip on mage bubbles
+		if (creature->entity_data.race == 285)
+		{
+			return;
+		}
+
 		cube::Creature* player = game->GetPlayer();
 		if (player->id == attacker->id || player->pet_id == attacker->id)
 		{
 			FloatRGBA purple(0.65f, 0.40f, 1.0f, 1.0f);
 			int xp_gain = GetCreatureLevel(creature) * (creature->entity_data.level + 1);
+
+			if (creature->entity_data.flags & (1 << (int)cube::Creature::AppearanceModifiers::IsBoss))
+			{
+				xp_gain *= 10;
+			}
+
+			if (creature->entity_data.flags & (1 << (int)cube::Creature::AppearanceModifiers::IsNamedBoss))
+			{
+				xp_gain *= 5;
+			}
+
+			if (creature->entity_data.flags & (1 << (int)cube::Creature::AppearanceModifiers::IsMiniBoss))
+			{
+				xp_gain *= 5;
+			}
 
 			wchar_t buffer[250];
 			swprintf_s(buffer, 250, L"You gain %d xp.\n", xp_gain);
