@@ -131,19 +131,19 @@ class Mod : GenericMod {
 			FloatRGBA purple(0.65f, 0.40f, 1.0f, 1.0f);
 			int xp_gain = GetCreatureLevel(creature) * (creature->entity_data.level + 1);
 
-			if (creature->entity_data.flags & (1 << (int)cube::Creature::AppearanceModifiers::IsBoss))
+			if ((creature->entity_data.appearance.flags2 & (1 << (int)cube::Creature::AppearanceModifiers::IsBoss)) != 0)
 			{
 				xp_gain *= 10;
 			}
 
-			if (creature->entity_data.flags & (1 << (int)cube::Creature::AppearanceModifiers::IsNamedBoss))
+			if ((creature->entity_data.appearance.flags2 & (1 << (int)cube::Creature::AppearanceModifiers::IsNamedBoss)) != 0)
 			{
-				xp_gain *= 5;
+				xp_gain *= 10;
 			}
 
-			if (creature->entity_data.flags & (1 << (int)cube::Creature::AppearanceModifiers::IsMiniBoss))
+			if ((creature->entity_data.appearance.flags2 & (1 << (int)cube::Creature::AppearanceModifiers::IsMiniBoss)) != 0)
 			{
-				xp_gain *= 5;
+				xp_gain *= 10;
 			}
 
 			wchar_t buffer[250];
