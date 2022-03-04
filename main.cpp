@@ -238,7 +238,8 @@ class Mod : GenericMod {
 
 	void ApplyCreatureBuff(cube::Creature* creature, float* stat, STAT_TYPE type)
 	{
-		if (creature->entity_data.hostility_type != cube::Creature::EntityBehaviour::Player)
+		if (creature->entity_data.hostility_type != cube::Creature::EntityBehaviour::Player &&
+			creature->entity_data.hostility_type != cube::Creature::EntityBehaviour::Pet)
 		{
 			*stat /= creature->entity_data.level + 1;
 			*stat += m_CreatureScaling.at(type) * GetCreatureLevel(creature);
