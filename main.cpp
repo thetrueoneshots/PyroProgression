@@ -12,6 +12,32 @@
 #include "src/GearScalingOverWrite.h"
 #include "src/GoldDropOverWrite.h"
 
+void OnLevelUp(cube::Game* game, cube::Creature* creature)
+{
+	FloatRGBA purple(0.65f, 0.40f, 1.0f, 1.0f);
+	cube::TextFX xpText = cube::TextFX();
+
+	// Play sound effect
+	game->PlaySoundEffect(cube::Game::SoundEffect::sound_level_up);
+
+	// Set levelup textFX
+	xpText.position = creature->entity_data.position;
+	xpText.animation_length = 3000;
+	xpText.distance_to_fall = -500;
+	xpText.color = purple;
+	xpText.size = 64;
+	xpText.offset_2d = FloatVector2(0, 0);
+	xpText.text = L"LEVEL UP!\n";
+	xpText.field_60 = 0;
+	game->textfx_list.push_back(xpText);
+
+	// Print levelup in chat
+	game->PrintMessage(L"LEVEL UP!\n", &purple);
+
+	// Restore health
+	creature->entity_data.HP = creature->GetMaxHP();
+}
+
 /* Mod class containing all the functions for the mod.
 */
 class Mod : GenericMod {
@@ -83,22 +109,7 @@ class Mod : GenericMod {
 			entity_data->XP -= player->GetXPForLevelup();
 			entity_data->level += 1;
 
-			game->PlaySoundEffect(cube::Game::SoundEffect::sound_level_up);
-
-			FloatRGBA purple(0.65f, 0.40f, 1.0f, 1.0f);
-
-			cube::TextFX xpText = cube::TextFX();
-			xpText.position = player->entity_data.position;
-			xpText.animation_length = 3000;
-			xpText.distance_to_fall = -500;
-			xpText.color = purple;
-			xpText.size = 64;
-			xpText.offset_2d = FloatVector2(0, 0);
-			xpText.text = L"LEVEL UP!\n";
-			xpText.field_60 = 0;
-
-			game->textfx_list.push_back(xpText);
-			game->PrintMessage(L"LEVEL UP!\n", &purple);
+			OnLevelUp(game, player);
 		}
 
 		// Set starting region if not set
@@ -170,11 +181,32 @@ class Mod : GenericMod {
 	}
 
 	virtual void OnGetItemBuyingPrice(cube::Item* item, int* price) override {
-		if (item->category >= 3 && item->category <= 9)
+		int category = item->category;
+
+		if (category >= 3 && category <= 9)
 		{
-			int level = GetItemLevel(item);
-			*price *= level;
+			*price *= GetItemLevel(item);
 		}
+
+		if (category == 15)
+		{
+			*price *= GetItemLevel(item);
+		}
+	}
+
+	virtual void OnCreatureCanEquipItem(cube::Creature* creature, cube::Item* item, bool* equipable) override
+	{
+		if (creature->entity_data.hostility_type != cube::Creature::EntityBehaviour::Player)
+		{
+			return;
+		}
+
+		if (creature->entity_data.level + 5 >= GetItemLevel(item))
+		{
+			return;
+		}
+
+		*equipable = false;
 	}
 
 	/* Function hook that gets called on intialization of cubeworld.
