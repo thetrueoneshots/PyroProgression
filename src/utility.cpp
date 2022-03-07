@@ -1,5 +1,19 @@
 #include "utility.h"
 
+int GetRegionDistance(IntVector2 region)
+{
+	cube::Game* game = cube::GetGame();
+	if (!game)
+	{
+		return 0;
+	}
+
+	IntVector2 base_region = game->GetPlayer()->entity_data.equipment.unk_item.region;
+	int xDiv = std::abs(base_region.x - region.x);
+	int yDiv = std::abs(base_region.y - region.y);
+	return std::max<int>(xDiv, yDiv);
+}
+
 int GetItemLevel(cube::Item* item)
 {
 	if (!item)
@@ -13,15 +27,7 @@ int GetItemLevel(cube::Item* item)
 		return item->rarity;
 	}
 
-	
-	IntVector2 base_region = game->GetPlayer()->entity_data.equipment.unk_item.region;
-	IntVector2 current_region = item->region;
-
-	int xDiv = std::abs(base_region.x - current_region.x);
-	int yDiv = std::abs(base_region.y - current_region.y);
-	int distance = std::max<int>(xDiv, yDiv);
-
-	return 1 + distance;
+	return 1 + GetRegionDistance(item->region);
 }
 
 int GetCreatureLevel(cube::Creature* creature)
@@ -42,9 +48,7 @@ int GetCreatureLevel(cube::Creature* creature)
 		current_region = game->GetPlayer()->entity_data.current_region;
 	}
 
-	int xDiv = std::abs(base_region.x - current_region.x);
-	int yDiv = std::abs(base_region.y - current_region.y);
-	int distance = std::max<int>(xDiv, yDiv);
+	int distance = GetRegionDistance(current_region);
 
 	switch (creature->entity_data.hostility_type)
 	{
