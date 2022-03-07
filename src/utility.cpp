@@ -27,7 +27,7 @@ int GetItemLevel(cube::Item* item)
 		return item->rarity;
 	}
 
-	return 1 + GetRegionDistance(item->region);
+	return 1 + 20 * GetRegionDistance(item->region) + GetLevelVariation(item->modifier, 20);
 }
 
 int GetCreatureLevel(cube::Creature* creature)
@@ -56,6 +56,15 @@ int GetCreatureLevel(cube::Creature* creature)
 	case cube::Creature::EntityBehaviour::Pet:
 		return creature->entity_data.level;
 	default:
-		return 1 + distance;
+		// Variation where packs of creatures have the same level
+		//return (1 + 5 * distance) + GetLevelVariation(creature->entity_data.race * distance, 5);
+		return (1 + 20 * distance) + GetLevelVariation(creature->id, 20);
 	}
+}
+
+// Can also be done without rands but just as a `modifier % range`
+int GetLevelVariation(long long modifier, int range)
+{
+	std::srand(modifier);
+	return std::rand() % range;
 }
