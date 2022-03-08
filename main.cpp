@@ -226,10 +226,10 @@ class Mod : GenericMod {
 		m_PlayerScaling.insert_or_assign(STAT_TYPE::RESISTANCE, 0.5f);
 		
 		// Offense
-		m_PlayerScaling.insert_or_assign(STAT_TYPE::ATK_POWER, 0.5f);
-		m_PlayerScaling.insert_or_assign(STAT_TYPE::SPELL_POWER, 0.5f);
-		m_PlayerScaling.insert_or_assign(STAT_TYPE::CRIT, 0.00001f);
-		m_PlayerScaling.insert_or_assign(STAT_TYPE::HASTE, 0.00001f);
+		m_PlayerScaling.insert_or_assign(STAT_TYPE::ATK_POWER, 1);
+		m_PlayerScaling.insert_or_assign(STAT_TYPE::SPELL_POWER, 1);
+		m_PlayerScaling.insert_or_assign(STAT_TYPE::CRIT, 0.0001f);
+		m_PlayerScaling.insert_or_assign(STAT_TYPE::HASTE, 0.0001f);
 		
 		// Utility
 		m_PlayerScaling.insert_or_assign(STAT_TYPE::STAMINA, 0.05f);
@@ -237,9 +237,9 @@ class Mod : GenericMod {
 
 		// ##### CREATURE ######
 		// Defense
-		m_CreatureScaling.insert_or_assign(STAT_TYPE::HEALTH, 10);
-		m_CreatureScaling.insert_or_assign(STAT_TYPE::ARMOR, 2);
-		m_CreatureScaling.insert_or_assign(STAT_TYPE::RESISTANCE, 2);
+		m_CreatureScaling.insert_or_assign(STAT_TYPE::HEALTH, 20);
+		m_CreatureScaling.insert_or_assign(STAT_TYPE::ARMOR, 0);
+		m_CreatureScaling.insert_or_assign(STAT_TYPE::RESISTANCE, 0);
 
 		// Offense
 		m_CreatureScaling.insert_or_assign(STAT_TYPE::ATK_POWER, 1);
