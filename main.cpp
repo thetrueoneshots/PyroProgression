@@ -254,6 +254,15 @@ class Mod : GenericMod {
 		return;
 	}
 
+	virtual void OnItemGetGoldBagValue(cube::Item* item, int* gold) override {
+		cube::Game* game = cube::GetGame();
+		if (!game)
+		{
+			return;
+		}
+		*gold = 100 * (GetRegionDistance(game->GetPlayer()->entity_data.current_region) + 1);
+	}
+
 	void ApplyStatBuff(cube::Creature* creature, float* stat, STAT_TYPE type)
 	{
 		cube::Game* game = cube::GetGame();
@@ -274,7 +283,7 @@ class Mod : GenericMod {
 			creature->entity_data.hostility_type != cube::Creature::EntityBehaviour::Pet)
 		{
 			*stat /= creature->entity_data.level + 1;
-			*stat += m_CreatureScaling.at(type) * GetCreatureLevel(creature);
+			*stat += m_CreatureScaling.at(type) * (GetCreatureLevel(creature) - LEVELS_PER_REGION / 2);
 			*stat *= creature->entity_data.level + 1;
 		}
 	}

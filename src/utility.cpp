@@ -27,7 +27,7 @@ int GetItemLevel(cube::Item* item)
 		return item->rarity;
 	}
 
-	return 1 + 20 * GetRegionDistance(item->region) + GetLevelVariation(item->modifier, 20);
+	return 1 + LEVELS_PER_REGION * GetRegionDistance(item->region) + GetLevelVariation(item->modifier, LEVELS_PER_REGION);
 }
 
 int GetCreatureLevel(cube::Creature* creature)
@@ -58,7 +58,7 @@ int GetCreatureLevel(cube::Creature* creature)
 	default:
 		// Variation where packs of creatures have the same level
 		//return (1 + 5 * distance) + GetLevelVariation(creature->entity_data.race * distance, 5);
-		return (1 + 20 * distance) + GetLevelVariation(creature->id, 20);
+		return (1 + LEVELS_PER_REGION * distance) + GetLevelVariation(creature->id, LEVELS_PER_REGION);
 	}
 }
 
