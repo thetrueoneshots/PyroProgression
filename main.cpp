@@ -125,7 +125,19 @@ class Mod : GenericMod {
 	}
 
 	virtual void OnCreatureDeath(cube::Game* game, cube::Creature* creature, cube::Creature* attacker) override {
-		if (attacker == nullptr || creature == nullptr)
+		if (creature == nullptr)
+		{
+			return;
+		}
+
+		// Set correct position for items to drop
+		if (creature->entity_data.current_region == IntVector2(0, 0))
+		{
+			// Guessing that entity_data.some_position is the initial spawning position
+			creature->entity_data.some_position = creature->entity_data.position;
+		}
+
+		if (attacker == nullptr)
 		{
 			return;
 		}
