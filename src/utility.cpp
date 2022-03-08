@@ -65,6 +65,11 @@ int GetCreatureLevel(cube::Creature* creature)
 // Can also be done without rands but just as a `modifier % range`
 int GetLevelVariation(long long modifier, int range)
 {
-	std::srand(modifier);
-	return std::rand() % range;
+	return PyroRand(modifier) % range;
+}
+
+unsigned long long PyroRand(unsigned long long seed)
+{
+	auto n = seed * 1103515245 + 12345;
+	return (unsigned long long)(n / 65536) % 32768;
 }
