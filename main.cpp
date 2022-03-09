@@ -98,6 +98,11 @@ class Mod : GenericMod {
 			}
 		}
 
+		if (!player)
+		{
+			return;
+		}
+
 		// Show and move xp bar and level info
 		plasma::Node* node = game->gui.levelinfo_node;
 		node->SetVisibility(true);
@@ -119,6 +124,26 @@ class Mod : GenericMod {
 		{
 			storage->modifier = 1;
 			storage->region = entity_data->current_region;
+
+			const int modifier = 0;
+
+			entity_data->equipment.weapon_right.modifier = modifier;
+			entity_data->equipment.weapon_left.modifier = modifier;
+			entity_data->equipment.chest.modifier = modifier;
+			entity_data->equipment.feet.modifier = modifier;
+			entity_data->equipment.hands.modifier = modifier;
+			entity_data->equipment.neck.modifier = modifier;
+			entity_data->equipment.shoulder.modifier = modifier;
+			entity_data->equipment.ring_left.modifier = modifier;
+			entity_data->equipment.ring_right.modifier = modifier;
+
+			if (player->inventory_tabs.size() > 1)
+			{
+				for (cube::ItemStack& itemstack : player->inventory_tabs.at(0))
+				{
+					itemstack.item.modifier = modifier;
+				}
+			}
 		}
 
 		return;
@@ -214,6 +239,11 @@ class Mod : GenericMod {
 			return;
 		}
 
+		if (item->category < 3 || item->category > 9)
+		{
+			return;
+		}
+
 		if (creature->entity_data.level + LEVEL_EQUIPMENT_CAP >= GetItemLevel(item))
 		{
 			return;
@@ -227,11 +257,6 @@ class Mod : GenericMod {
 		cube::Game* game = cube::GetGame();
 
 		if (!game)
-		{
-			return;
-		}
-
-		if (item->category < 3 || item->category > 9)
 		{
 			return;
 		}
