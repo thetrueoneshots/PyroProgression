@@ -202,7 +202,8 @@ class Mod : GenericMod {
 
 		if (category == 15)
 		{
-			*price *= GetItemLevel(item);
+			*price *= *price;
+			*price *= 2 * (1 + GetRegionDistance(item->region));
 		}
 	}
 
@@ -230,6 +231,11 @@ class Mod : GenericMod {
 			return;
 		}
 
+		if (item->category < 3 || item->category > 9)
+		{
+			return;
+		}
+
 		this->OnCreatureCanEquipItem(game->GetPlayer(), item, wearable);
 	}
 
@@ -246,8 +252,8 @@ class Mod : GenericMod {
 		// ##### PLAYER ######
 		// Defense
 		m_PlayerScaling.insert_or_assign(STAT_TYPE::HEALTH, 5);
-		m_PlayerScaling.insert_or_assign(STAT_TYPE::ARMOR, 0.5f);
-		m_PlayerScaling.insert_or_assign(STAT_TYPE::RESISTANCE, 0.5f);
+		m_PlayerScaling.insert_or_assign(STAT_TYPE::ARMOR, 1);
+		m_PlayerScaling.insert_or_assign(STAT_TYPE::RESISTANCE, 1);
 		
 		// Offense
 		m_PlayerScaling.insert_or_assign(STAT_TYPE::ATK_POWER, 1);
@@ -262,8 +268,8 @@ class Mod : GenericMod {
 		// ##### CREATURE ######
 		// Defense
 		m_CreatureScaling.insert_or_assign(STAT_TYPE::HEALTH, 20);
-		m_CreatureScaling.insert_or_assign(STAT_TYPE::ARMOR, 0);
-		m_CreatureScaling.insert_or_assign(STAT_TYPE::RESISTANCE, 0);
+		m_CreatureScaling.insert_or_assign(STAT_TYPE::ARMOR, 0.1f);
+		m_CreatureScaling.insert_or_assign(STAT_TYPE::RESISTANCE, 0.1f);
 
 		// Offense
 		m_CreatureScaling.insert_or_assign(STAT_TYPE::ATK_POWER, 1);
