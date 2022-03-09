@@ -213,12 +213,24 @@ class Mod : GenericMod {
 			return;
 		}
 
-		if (creature->entity_data.level + 5 >= GetItemLevel(item))
+		if (creature->entity_data.level + LEVEL_EQUIPMENT_CAP >= GetItemLevel(item))
 		{
 			return;
 		}
 
 		*equipable = false;
+	}
+
+	virtual void OnClassCanWearItem(cube::Item* item, int classType, bool* wearable) override
+	{
+		cube::Game* game = cube::GetGame();
+
+		if (!game)
+		{
+			return;
+		}
+
+		this->OnCreatureCanEquipItem(game->GetPlayer(), item, wearable);
 	}
 
 	/* Function hook that gets called on intialization of cubeworld.
