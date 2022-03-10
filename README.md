@@ -14,6 +14,8 @@ The idea of adding XP and leveling to Cube World release has been there since th
 ## Description
 This is a mod that adds XP when killing enemies, levels and scaling of the player, enemies and gear. And all that in a hopefully balanced, intuitive and integrated way. I hope to get you as exited as we were making this mod. Note that this mod does not do anything to the existing region lock. It is balanced around being region locked, but you can still have loads of fun with different region lock mods as they are not game breaking.
 
+![Mod](https://i.imgur.com/0zKnyZ0.png)
+
 ### Features
 - XP is gained based on the level, star rating and type of enemy **if and only if you or your pet kills the creature**. *(This means having the actual last damaging hit)*
 - Gaining XP will fill up the XP-bar and your character will Level Up if the treshold is reached.
