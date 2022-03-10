@@ -186,12 +186,12 @@ class Mod : GenericMod {
 
 			if ((creature->entity_data.appearance.flags2 & (1 << (int)cube::Creature::AppearanceModifiers::IsNamedBoss)) != 0)
 			{
-				xp_gain *= 10;
+				xp_gain *= 5;
 			}
 
 			if ((creature->entity_data.appearance.flags2 & (1 << (int)cube::Creature::AppearanceModifiers::IsMiniBoss)) != 0)
 			{
-				xp_gain *= 10;
+				xp_gain *= 2;
 			}
 
 			wchar_t buffer[250];
