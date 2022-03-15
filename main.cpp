@@ -187,7 +187,6 @@ class Mod : GenericMod {
 				xp_gain = (int)std::roundf(100 * (creature->entity_data.level + 1) * (1 + 0.15f * (GetCreatureLevel(creature) - player->entity_data.level)) * std::powf(1.05f, GetCreatureLevel(creature) - player->entity_data.level));
 			}
 
-			//int xp_gain = GetCreatureLevel(creature) * (creature->entity_data.level + 1);
 
 			if ((creature->entity_data.appearance.flags2 & (1 << (int)cube::Creature::AppearanceModifiers::IsBoss)) != 0)
 			{
@@ -347,17 +346,9 @@ class Mod : GenericMod {
 		if (creature->entity_data.hostility_type != cube::Creature::EntityBehaviour::Player &&
 			creature->entity_data.hostility_type != cube::Creature::EntityBehaviour::Pet)
 		{
-			//*stat /= creature->entity_data.level + 1;
-			//*stat += m_CreatureScaling.at(type) * (GetCreatureLevel(creature) - LEVELS_PER_REGION / 2);
-			//*stat *= creature->entity_data.level + 1;
-			if (type != STAT_TYPE::HASTE && type != STAT_TYPE::CRIT) {
-				*stat *= 0.2 * std::pow(2.7183, 0.2 * GetCreatureLevel(creature)) / 1.21 * std::pow(0.99, 1 + 0.07 * GetCreatureLevel(creature) * GetCreatureLevel(creature));
-			}
-			else {
-				//*stat /= creature->entity_data.level + 1;
-				//*stat += m_CreatureScaling.at(type) * (GetCreatureLevel(creature) - LEVELS_PER_REGION / 2);
-				//*stat *= creature->entity_data.level + 1;
-			}
+			*stat += m_CreatureScaling.at(type) * GetCreatureLevel(creature);
+			*stat *= 0.2 * std::pow(2.7183, 0.2 * GetCreatureLevel(creature)) / 1.21 * std::pow(0.99, 1 + 0.07 * GetCreatureLevel(creature) * GetCreatureLevel(creature));
+		
 		}
 	}
 
@@ -369,7 +360,6 @@ class Mod : GenericMod {
 
 	virtual void OnCreatureCriticalCalculated(cube::Creature* creature, float* critical) override {
 		ApplyStatBuff(creature, critical, STAT_TYPE::CRIT);
-		ApplyCreatureBuff(creature, critical, STAT_TYPE::CRIT);
 	}
 
 	virtual void OnCreatureAttackPowerCalculated(cube::Creature* creature, float* power) override {
@@ -384,7 +374,6 @@ class Mod : GenericMod {
 
 	virtual void OnCreatureHasteCalculated(cube::Creature* creature, float* haste) override {
 		ApplyStatBuff(creature, haste, STAT_TYPE::HASTE);
-		ApplyCreatureBuff(creature, haste, STAT_TYPE::HASTE);
 	}
 
 	virtual void OnCreatureHPCalculated(cube::Creature* creature, float* hp) override {
