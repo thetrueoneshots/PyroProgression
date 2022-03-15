@@ -346,8 +346,8 @@ class Mod : GenericMod {
 		if (creature->entity_data.hostility_type != cube::Creature::EntityBehaviour::Player &&
 			creature->entity_data.hostility_type != cube::Creature::EntityBehaviour::Pet)
 		{
-			*stat += m_CreatureScaling.at(type) * GetCreatureLevel(creature);
 			*stat *= 0.2 * std::pow(2.7183, 0.2 * GetCreatureLevel(creature)) / 1.21 * std::pow(0.99, 1 + 0.07 * GetCreatureLevel(creature) * GetCreatureLevel(creature));
+			*stat += m_CreatureScaling.at(type) * GetCreatureLevel(creature);
 		
 		}
 	}
