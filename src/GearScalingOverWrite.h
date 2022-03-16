@@ -25,7 +25,6 @@ extern "C" float GetGearScaling(cube::Item * item, cube::Creature* creature, int
 	float mod_modifier = (mod3 / 0x10624DD3) / 7.0f;
 
 	float X = 1.4;
-
 	float Y = base_res + effective_rarity + mod_modifier;
 
 	float result = std::powf(X, Y);
@@ -82,12 +81,10 @@ extern "C" float GetOtherStatsRe(cube::Item * item, cube::Creature * creature)
 
 
 	int category = item->category;
-
 	if (category < 3 || category > 9)
 	{
 		result *= 0;
 	}
-
 
 	return result;
 }
@@ -130,7 +127,6 @@ __attribute__((naked)) void ASM_OverwriteGearScaling() {
 void Setup_GearScalingOverwrite() {
 	//WriteFarJMP(CWOffset(0x109D11), (void*)&ASM_OverwriteGearScaling);
 	WriteFarJMP(CWOffset(0x109C50), GetGearScaling);
-
 	WriteFarJMP(CWOffset(0x10A490), GetHasteRe); //haste
 	WriteFarJMP(CWOffset(0x109F30), GetRegenRe); //regen
 	WriteFarJMP(CWOffset(0x1090F0), GetCritRe); //critical
