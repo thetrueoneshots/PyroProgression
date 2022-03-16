@@ -1,8 +1,8 @@
 #pragma once
 #include "cwsdk.h"
 
-#define LEVELS_PER_REGION 3
-#define LEVEL_EQUIPMENT_CAP 0
+#define LEVELS_PER_REGION 10
+#define LEVEL_EQUIPMENT_CAP 5
 
 int GetRegionDistance(IntVector2 region);
 int GetItemLevel(cube::Item* item);
