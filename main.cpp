@@ -177,7 +177,16 @@ class Mod : GenericMod {
 		if (player->id == attacker->id || player->pet_id == attacker->id)
 		{
 			FloatRGBA purple(0.65f, 0.40f, 1.0f, 1.0f);
-			int xp_gain = GetCreatureLevel(creature) * (creature->entity_data.level + 1);
+
+			int xp_gain = 100;
+
+			if (player->entity_data.level > GetCreatureLevel(creature)) {
+				xp_gain = (int)std::roundf(100 * (creature->entity_data.level + 1) * std::powf(0.8f, player->entity_data.level - GetCreatureLevel(creature)));
+			}
+			else {
+				xp_gain = (int)std::roundf(100 * (creature->entity_data.level + 1) * (1 + 0.15f * (GetCreatureLevel(creature) - player->entity_data.level)) * std::powf(1.05f, GetCreatureLevel(creature) - player->entity_data.level));
+			}
+
 
 			if ((creature->entity_data.appearance.flags2 & (1 << (int)cube::Creature::AppearanceModifiers::IsBoss)) != 0)
 			{
@@ -276,13 +285,13 @@ class Mod : GenericMod {
 
 		// ##### PLAYER ######
 		// Defense
-		m_PlayerScaling.insert_or_assign(STAT_TYPE::HEALTH, 5);
-		m_PlayerScaling.insert_or_assign(STAT_TYPE::ARMOR, 1);
-		m_PlayerScaling.insert_or_assign(STAT_TYPE::RESISTANCE, 1);
+		m_PlayerScaling.insert_or_assign(STAT_TYPE::HEALTH, 1);
+		m_PlayerScaling.insert_or_assign(STAT_TYPE::ARMOR, 0.2);
+		m_PlayerScaling.insert_or_assign(STAT_TYPE::RESISTANCE, 0.2);
 		
 		// Offense
-		m_PlayerScaling.insert_or_assign(STAT_TYPE::ATK_POWER, 1);
-		m_PlayerScaling.insert_or_assign(STAT_TYPE::SPELL_POWER, 1);
+		m_PlayerScaling.insert_or_assign(STAT_TYPE::ATK_POWER, 0.2);
+		m_PlayerScaling.insert_or_assign(STAT_TYPE::SPELL_POWER, 0.2);
 		m_PlayerScaling.insert_or_assign(STAT_TYPE::CRIT, 0.0001f);
 		m_PlayerScaling.insert_or_assign(STAT_TYPE::HASTE, 0.0001f);
 		
@@ -292,13 +301,13 @@ class Mod : GenericMod {
 
 		// ##### CREATURE ######
 		// Defense
-		m_CreatureScaling.insert_or_assign(STAT_TYPE::HEALTH, 20);
-		m_CreatureScaling.insert_or_assign(STAT_TYPE::ARMOR, 0.1f);
-		m_CreatureScaling.insert_or_assign(STAT_TYPE::RESISTANCE, 0.1f);
+		m_CreatureScaling.insert_or_assign(STAT_TYPE::HEALTH, 4);
+		m_CreatureScaling.insert_or_assign(STAT_TYPE::ARMOR, 0.02f);
+		m_CreatureScaling.insert_or_assign(STAT_TYPE::RESISTANCE, 0.02f);
 
 		// Offense
-		m_CreatureScaling.insert_or_assign(STAT_TYPE::ATK_POWER, 1);
-		m_CreatureScaling.insert_or_assign(STAT_TYPE::SPELL_POWER, 1);
+		m_CreatureScaling.insert_or_assign(STAT_TYPE::ATK_POWER, 0.2);
+		m_CreatureScaling.insert_or_assign(STAT_TYPE::SPELL_POWER, 0.2);
 		m_CreatureScaling.insert_or_assign(STAT_TYPE::CRIT, 0);
 		m_CreatureScaling.insert_or_assign(STAT_TYPE::HASTE, 0);
 
@@ -337,11 +346,12 @@ class Mod : GenericMod {
 		if (creature->entity_data.hostility_type != cube::Creature::EntityBehaviour::Player &&
 			creature->entity_data.hostility_type != cube::Creature::EntityBehaviour::Pet)
 		{
-			*stat /= creature->entity_data.level + 1;
-			*stat += m_CreatureScaling.at(type) * (GetCreatureLevel(creature) - LEVELS_PER_REGION / 2);
-			*stat *= creature->entity_data.level + 1;
+			*stat *= 0.2 * std::pow(2.7183, 0.2 * GetCreatureLevel(creature)) / 1.21 * std::pow(0.99, 1 + 0.07 * GetCreatureLevel(creature) * GetCreatureLevel(creature));
+			*stat += m_CreatureScaling.at(type) * GetCreatureLevel(creature);
+		
 		}
 	}
+
 
 	virtual void OnCreatureArmorCalculated(cube::Creature* creature, float* armor) override {
 		ApplyStatBuff(creature, armor, STAT_TYPE::ARMOR);
@@ -350,7 +360,6 @@ class Mod : GenericMod {
 
 	virtual void OnCreatureCriticalCalculated(cube::Creature* creature, float* critical) override {
 		ApplyStatBuff(creature, critical, STAT_TYPE::CRIT);
-		ApplyCreatureBuff(creature, critical, STAT_TYPE::CRIT);
 	}
 
 	virtual void OnCreatureAttackPowerCalculated(cube::Creature* creature, float* power) override {
@@ -365,7 +374,6 @@ class Mod : GenericMod {
 
 	virtual void OnCreatureHasteCalculated(cube::Creature* creature, float* haste) override {
 		ApplyStatBuff(creature, haste, STAT_TYPE::HASTE);
-		ApplyCreatureBuff(creature, haste, STAT_TYPE::HASTE);
 	}
 
 	virtual void OnCreatureHPCalculated(cube::Creature* creature, float* hp) override {
