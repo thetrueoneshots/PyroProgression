@@ -316,7 +316,6 @@ class Mod : GenericMod {
 		// Offense
 		m_CreatureScaling.insert_or_assign(STAT_TYPE::ATK_POWER, 0.8);
 		m_CreatureScaling.insert_or_assign(STAT_TYPE::SPELL_POWER, 0.8);
-
 		m_CreatureScaling.insert_or_assign(STAT_TYPE::CRIT, 0);
 		m_CreatureScaling.insert_or_assign(STAT_TYPE::HASTE, 0);
 
