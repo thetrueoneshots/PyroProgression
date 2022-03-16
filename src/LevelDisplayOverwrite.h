@@ -15,14 +15,40 @@ extern "C" void OverwriteItemName(cube::Item * item, std::wstring * string)
 	}
 
 	wchar_t buffer[250];
-	swprintf_s(buffer, 250, L"LV %d ", GetItemLevel(item));
+	double item_level = GetItemLevel(item);
+
+	if (item_level > 1e6)
+	{
+		swprintf_s(buffer, 250, L"LV %.2fM ", item_level / 1e6);
+	}
+	else if (item_level > 1e3)
+	{
+		swprintf_s(buffer, 250, L"LV %.2fK ", item_level / 1e3);
+	}
+	else
+	{
+		swprintf_s(buffer, 250, L"LV %.0f ", item_level);
+	}
 	*string = buffer + *string;
 }
 
 extern "C" void LevelDisplayOverwriteCreature(cube::Creature* creature, void* unk)
 {
 	wchar_t buffer[250];
-	swprintf_s(buffer, 250, L"LV %d ", GetCreatureLevel(creature));
+	double item_level = GetCreatureLevel(creature);
+
+	if (item_level > 1e6)
+	{
+		swprintf_s(buffer, 250, L"LV %.2fM ", item_level / 1e6);
+	}
+	else if (item_level > 1e3)
+	{
+		swprintf_s(buffer, 250, L"LV %.2fK ", item_level / 1e3);
+	}
+	else
+	{
+		swprintf_s(buffer, 250, L"LV %.0f ", item_level);
+	}
 	PutText(unk, buffer);
 	return;
 }

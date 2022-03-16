@@ -63,6 +63,21 @@ class Mod : GenericMod {
 	 * @return	{int}
 	*/
 	virtual int OnChat(std::wstring* message) override {
+		const wchar_t* str = message->c_str();
+		if (!wcscmp(str, L"/recenter"))
+		{
+			cube::Game* game = cube::GetGame();
+			cube::Creature* player = game->GetPlayer();
+			if (!player)
+			{
+				game->PrintMessage(L"[Error] No local player found!\n", 255, 0, 0);
+				return 1;
+			}
+
+			player->entity_data.equipment.unk_item.region = player->entity_data.current_region;
+			game->PrintMessage(L"[Notification] Correctly recentered player region.\n", 0, 255, 0);
+			return 1;
+		}
 		return 0;
 	}
 
@@ -301,13 +316,13 @@ class Mod : GenericMod {
 
 		// ##### CREATURE ######
 		// Defense
-		m_CreatureScaling.insert_or_assign(STAT_TYPE::HEALTH, 4);
-		m_CreatureScaling.insert_or_assign(STAT_TYPE::ARMOR, 0.02f);
-		m_CreatureScaling.insert_or_assign(STAT_TYPE::RESISTANCE, 0.02f);
+		m_CreatureScaling.insert_or_assign(STAT_TYPE::HEALTH, 0.9);
+		m_CreatureScaling.insert_or_assign(STAT_TYPE::ARMOR, 0.7);
+		m_CreatureScaling.insert_or_assign(STAT_TYPE::RESISTANCE, 0.7);
 
 		// Offense
-		m_CreatureScaling.insert_or_assign(STAT_TYPE::ATK_POWER, 0.2);
-		m_CreatureScaling.insert_or_assign(STAT_TYPE::SPELL_POWER, 0.2);
+		m_CreatureScaling.insert_or_assign(STAT_TYPE::ATK_POWER, 0.8);
+		m_CreatureScaling.insert_or_assign(STAT_TYPE::SPELL_POWER, 0.8);
 		m_CreatureScaling.insert_or_assign(STAT_TYPE::CRIT, 0);
 		m_CreatureScaling.insert_or_assign(STAT_TYPE::HASTE, 0);
 
@@ -346,8 +361,7 @@ class Mod : GenericMod {
 		if (creature->entity_data.hostility_type != cube::Creature::EntityBehaviour::Player &&
 			creature->entity_data.hostility_type != cube::Creature::EntityBehaviour::Pet)
 		{
-			*stat *= 0.2 * std::pow(2.7183, 0.2 * GetCreatureLevel(creature)) / 1.21 * std::pow(0.99, 1 + 0.07 * GetCreatureLevel(creature) * GetCreatureLevel(creature));
-			*stat += m_CreatureScaling.at(type) * GetCreatureLevel(creature);
+			*stat *= m_CreatureScaling.at(type) * 0.5 * std::pow(2.7183, 0.2 * GetCreatureLevel(creature)) / 1.21 * std::pow(0.99, 1 + 0.07 * GetCreatureLevel(creature) * GetCreatureLevel(creature));
 		
 		}
 	}
