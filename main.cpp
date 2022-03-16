@@ -63,6 +63,22 @@ class Mod : GenericMod {
 	 * @return	{int}
 	*/
 	virtual int OnChat(std::wstring* message) override {
+		const wchar_t* str = message->c_str();
+		if (!wcscmp(str, L"/recenter"))
+		{
+			cube::Game* game = cube::GetGame();
+			cube::Creature* player = game->GetPlayer();
+			if (!player)
+			{
+				game->PrintMessage(L"[Error] No local player found!\n", 255, 0, 0);
+				return 1;
+			}
+
+			player->entity_data.equipment.unk_item.region = player->entity_data.current_region;
+			game->PrintMessage(L"[Notification] Correctly recentered player region.\n", 0, 255, 0);
+			return 1;
+		}
+
 		return 0;
 	}
 
