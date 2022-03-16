@@ -29,12 +29,14 @@ extern "C" void OverwriteItemName(cube::Item * item, std::wstring * string)
 	{
 		swprintf_s(buffer, 250, L"LV %.0f ", item_level);
 	}
+
 	*string = buffer + *string;
 }
 
 extern "C" void LevelDisplayOverwriteCreature(cube::Creature* creature, void* unk)
 {
 	wchar_t buffer[250];
+
 	double item_level = GetCreatureLevel(creature);
 
 	if (item_level > 1e6)
@@ -49,6 +51,7 @@ extern "C" void LevelDisplayOverwriteCreature(cube::Creature* creature, void* un
 	{
 		swprintf_s(buffer, 250, L"LV %.0f ", item_level);
 	}
+
 	PutText(unk, buffer);
 	return;
 }
