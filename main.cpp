@@ -58,32 +58,6 @@ class Mod : GenericMod {
 	};
 
 	std::vector<cube::TextFX> m_FXList;
-
-	void GainXP(cube::Game* game, int xp)
-	{
-		FloatRGBA purple(0.65f, 0.40f, 1.0f, 1.0f);
-		wchar_t buffer[250];
-		swprintf_s(buffer, 250, L"You gain %d xp.\n", xp);
-		game->PrintMessage(buffer, &purple);
-
-		cube::TextFX xpText = cube::TextFX();
-		xpText.position = game->GetPlayer()->entity_data.position + LongVector3(std::rand() % (cube::DOTS_PER_BLOCK * 50), std::rand() % (cube::DOTS_PER_BLOCK * 50), std::rand() % (cube::DOTS_PER_BLOCK * 50));
-		xpText.animation_length = 3000;
-		xpText.distance_to_fall = -100;
-		xpText.color = purple;
-		xpText.size = 32;
-		xpText.offset_2d = FloatVector2(-50, -100);
-		xpText.text = std::wstring(L"+") + std::to_wstring(xp) + std::wstring(L" XP");;
-		xpText.field_60 = 0;
-
-		for (int i = 0; i < 4; i++)
-		{
-			m_FXList.push_back(xpText);
-		}
-
-		game->GetPlayer()->entity_data.XP += xp;
-	}
-
 	/* Hook for the chat function. Triggers when a user sends something in the chat.
 	 * @param	{std::wstring*} message
 	 * @return	{int}
@@ -187,24 +161,6 @@ class Mod : GenericMod {
 			}
 		}
 
-		uint32 size = 0;
-		if (cube::SteamNetworking()->IsP2PPacketAvailable(&size, 2))
-		{
-			u8 buffer[size];
-			CSteamID id;
-			cube::SteamNetworking()->ReadP2PPacket(&buffer, size, &size, &id, 2);
-
-			BytesIO package(buffer, size);
-
-			int pkg_id = package.Read<int>();
-			int xp = package.Read<int>();
-
-			if (pkg_id == 0x1)
-			{
-				GainXP(game, xp);
-			}
-		}
-
 		return;
 	}
 
@@ -232,17 +188,38 @@ class Mod : GenericMod {
 			return;
 		}
 
-		if (attacker->entity_data.hostility_type == cube::Creature::EntityBehaviour::Player ||
-			attacker->entity_data.hostility_type == cube::Creature::EntityBehaviour::Pet)
+		cube::Creature* player = game->GetPlayer();
+		if (player->id == attacker->id || player->pet_id == attacker->id)
 		{
+			FloatRGBA purple(0.65f, 0.40f, 1.0f, 1.0f);
+
 			int xp_gain = 100;
 
 			if (player->entity_data.level > GetCreatureLevel(creature)) {
-				xp_gain = (int)std::roundf(100 * (creature->entity_data.level + 1) * std::powf(0.8f, player->entity_data.level - GetCreatureLevel(creature)));
+				if (player->entity_data.level < 50 && GetCreatureLevel(creature) < 50) {
+					xp_gain = (int)std::roundf(100 * (creature->entity_data.level + 1) * std::powf(0.8f, player->entity_data.level - GetCreatureLevel(creature)));
+				}
+				else if (player->entity_data.level >= 50 && GetCreatureLevel(creature) < 50) {
+					xp_gain = (int)std::roundf(100 * (creature->entity_data.level + 1) * std::powf(0.8f, 50 - GetCreatureLevel(creature)));
+					xp_gain = (int)std::roundf((xp_gain / (1 + 0.02 * (player->entity_data.level - 50))));
+				}
+				else {
+					(int)std::roundf(100 * (creature->entity_data.level + 1) / (1 + 0.02 * (player->entity_data.level - GetCreatureLevel(creature))));
+				}
 			}
 			else {
-				xp_gain = (int)std::roundf(100 * (creature->entity_data.level + 1) * (1 + 0.15f * (GetCreatureLevel(creature) - player->entity_data.level)) * std::powf(1.05f, GetCreatureLevel(creature) - player->entity_data.level));
+				if (player->entity_data.level < 50 && GetCreatureLevel(creature) < 50) {
+					xp_gain = (int)std::roundf(100 * (creature->entity_data.level + 1) * (1 + 0.15f * (GetCreatureLevel(creature) - player->entity_data.level)) * std::powf(1.05f, GetCreatureLevel(creature) - player->entity_data.level));
+				}
+				else if (player->entity_data.level < 50 && GetCreatureLevel(creature) >= 50) {
+					xp_gain = (int)std::roundf(100 * (creature->entity_data.level + 1) * (1 + 0.15f * (50 - player->entity_data.level)) * std::powf(1.05f, 50 - player->entity_data.level));
+					xp_gain = (int)std::roundf((xp_gain * (1 + 0.02 * (GetCreatureLevel(creature) - 50))));
+				}
+				else {
+					(int)std::roundf(100 * (creature->entity_data.level + 1) * (1 + 0.02 * (GetCreatureLevel(creature) - player->entity_data.level)));
+				}
 			}
+
 
 			if ((creature->entity_data.appearance.flags2 & (1 << (int)cube::Creature::AppearanceModifiers::IsBoss)) != 0)
 			{
@@ -259,23 +236,26 @@ class Mod : GenericMod {
 				xp_gain *= 2;
 			}
 
+			wchar_t buffer[250];
+			swprintf_s(buffer, 250, L"You gain %d xp.\n", xp_gain);
+			game->PrintMessage(buffer, &purple);
 
-			// Code taken and modified from: https://github.com/ChrisMiuchiz/Cube-World-Chat-Mod/blob/master/main.cpp
-			// Send a packet instead of just writing to chat, if you are in an online session
-			// An online session shall be defined as whether you're connected to someone else's steam ID, or if your host has more than 1 connection
-			if (cube::SteamUser()->GetSteamID() == game->client.host_steam_id || game->host.connections.size() >= 1) {
-				// Construct a chat packet
-				// Thanks to Andoryuuta for reverse engineering these packets, even before the beta was released
-				BytesIO bytesio;
+			cube::TextFX xpText = cube::TextFX();
+			xpText.position = player->entity_data.position + LongVector3(std::rand() % (cube::DOTS_PER_BLOCK * 50) , std::rand() % (cube::DOTS_PER_BLOCK * 50), std::rand() % (cube::DOTS_PER_BLOCK * 50));
+			xpText.animation_length = 3000;
+			xpText.distance_to_fall = -100;
+			xpText.color = purple;
+			xpText.size = 32;
+			xpText.offset_2d = FloatVector2(-50, -100);
+			xpText.text = std::wstring(L"+") + std::to_wstring(xp_gain) + std::wstring(L" XP");;
+			xpText.field_60 = 0;
 
-				bytesio.Write<u32>(0x01); //Packet ID
-				bytesio.Write<u32>(xp_gain / game->host.connections.size()); //Message size
-
-				for (auto& conn : game->host.connections)
-				{
-					cube::SteamNetworking()->SendP2PPacket(conn.first, bytesio.Data(), bytesio.Size(), k_EP2PSendReliable, 2);
-				}
+			for (int i = 0; i < 4; i++)
+			{
+				m_FXList.push_back(xpText);
 			}
+
+			player->entity_data.XP += xp_gain;
 		}
 	}
 
@@ -399,8 +379,8 @@ class Mod : GenericMod {
 		if (creature->entity_data.hostility_type != cube::Creature::EntityBehaviour::Player &&
 			creature->entity_data.hostility_type != cube::Creature::EntityBehaviour::Pet)
 		{
-			*stat *= m_CreatureScaling.at(type) * 0.5 * std::pow(2.7183, 0.2 * GetCreatureLevel(creature)) / 1.21 * std::pow(0.99, 1 + 0.07 * GetCreatureLevel(creature) * GetCreatureLevel(creature));
-		
+			*stat *= m_CreatureScaling.at(type) * 0.5 * std::powf(2.7183, min(6, 0.2 * GetCreatureLevel(creature))) / 1.21;
+			*stat *= (1 + std::powf(std::logf((max(30.f, (float)GetCreatureLevel(creature)) + 70.f) / 100.f), 2) * 200);
 		}
 	}
 

@@ -29,10 +29,6 @@ int GetItemLevel(cube::Item* item)
 
 	int res = 1 + LEVELS_PER_REGION * GetRegionDistance(item->region) + GetLevelVariation(item->modifier, LEVELS_PER_REGION);
 
-	if (res > 333) {
-		res = 333;
-	}
-
 	return res;
 }
 

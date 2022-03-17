@@ -32,7 +32,8 @@ extern "C" float GetGearScaling(cube::Item * item, cube::Creature* creature, int
 	cube::Game* game = cube::GetGame();
 	if (game && creature->entity_data.hostility_type == cube::Creature::EntityBehaviour::Player)
 	{
-		result *= 0.5 * std::pow(2.7183, 0.2 * GetItemLevel(item)) / 1.21 * std::pow(0.99, 1 + 0.07 * GetItemLevel(item) * GetItemLevel(item));
+		result *= 0.5 * std::powf(2.7183, min(6, 0.2 * GetItemLevel(item))) / 1.21;
+		result *= (1 + std::powf(std::logf((max(30.f, (float)GetItemLevel(item)) + 70.f) / 100.f), 2) * 200);
 	}
 	return result;
 }
@@ -64,13 +65,21 @@ extern "C" float GetOtherStatsRe(cube::Item * item, cube::Creature * creature)
 
 	float result = std::powf(X, Y);
 
-	
-	result *= 0.01f + 0.0016f * GetItemLevel(item);
-	if (result > 0.2f) {
-		result = std::log2f(result/0.2f)*0.2f + 0.2f;
-		result *= randomizer;
+	cube::Game* game = cube::GetGame();
+	if (game && creature->entity_data.hostility_type == cube::Creature::EntityBehaviour::Player)
+	{
+		result *= 0.01f + 0.0016f * GetItemLevel(item);
+		if (result > 0.2f) {
+			result = std::log2f(result / 0.2f) * 0.2f + 0.2f;
+		}
 	}
-
+	else {
+		result *= 0.01f + 0.0016f * creature->entity_data.level;
+		if (result > 0.2f) {
+			result = std::log2f(result / 0.2f) * 0.2f + 0.2f;
+		}
+	}
+	//there is something wrong with GetItemLevel function for enemies. It gives insane values and enemies have too much haste.
 
 
 	int category = item->category;
