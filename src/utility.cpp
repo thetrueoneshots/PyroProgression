@@ -29,11 +29,22 @@ int GetItemLevel(cube::Item* item)
 
 	int res = 1 + LEVELS_PER_REGION * GetRegionDistance(item->region) + GetLevelVariation(item->modifier, LEVELS_PER_REGION);
 
-	if (res > 333) {
-		res = 333;
-	}
-
 	return res;
+}
+
+void SetEquipmentRegion(cube::Creature* creature, IntVector2 region)
+{
+	cube::Equipment* equipment = &creature->entity_data.equipment;
+	equipment->chest.region = region;
+	equipment->hands.region = region;
+	equipment->feet.region = region;
+	equipment->neck.region = region;
+	equipment->pet.region = region;
+	equipment->ring_left.region = region;
+	equipment->ring_right.region = region;
+	equipment->weapon_left.region = region;
+	equipment->weapon_right.region = region;
+	equipment->shoulder.region = region;
 }
 
 int GetCreatureLevel(cube::Creature* creature)
@@ -66,9 +77,6 @@ int GetCreatureLevel(cube::Creature* creature)
 		//return (1 + 5 * distance) + GetLevelVariation(creature->entity_data.race * distance, 5);
 
 		int res = (1 + LEVELS_PER_REGION * distance) + GetLevelVariation(creature->id, LEVELS_PER_REGION);
-		if (res > 333) {
-			res = 333;
-		}
 
 
 		return res;

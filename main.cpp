@@ -235,13 +235,18 @@ class Mod : GenericMod {
 		if (attacker->entity_data.hostility_type == cube::Creature::EntityBehaviour::Player ||
 			attacker->entity_data.hostility_type == cube::Creature::EntityBehaviour::Pet)
 		{
-			int xp_gain = 100;
+			int level = GetCreatureLevel(creature) + 1;
+			int stars = creature->entity_data.level + 1;
+			const static float multiplier = 1.0f / (LEVELS_PER_REGION + 1.0f);
+			cube::Creature* player = game->GetPlayer();
+
+			int xp_gain = 100 * stars;
 
 			if (player->entity_data.level > GetCreatureLevel(creature)) {
-				xp_gain = (int)std::roundf(100 * (creature->entity_data.level + 1) * std::powf(0.8f, player->entity_data.level - GetCreatureLevel(creature)));
+				xp_gain *= std::pow((float)level / (float)player->entity_data.level, 3);
 			}
 			else {
-				xp_gain = (int)std::roundf(100 * (creature->entity_data.level + 1) * (1 + 0.15f * (GetCreatureLevel(creature) - player->entity_data.level)) * std::powf(1.05f, GetCreatureLevel(creature) - player->entity_data.level));
+				xp_gain *= (1 + multiplier * (GetCreatureLevel(creature) - player->entity_data.level)) * std::powf(1.05f, GetCreatureLevel(creature) - player->entity_data.level);
 			}
 
 			if ((creature->entity_data.appearance.flags2 & (1 << (int)cube::Creature::AppearanceModifiers::IsBoss)) != 0)
@@ -355,8 +360,8 @@ class Mod : GenericMod {
 		// ##### CREATURE ######
 		// Defense
 		m_CreatureScaling.insert_or_assign(STAT_TYPE::HEALTH, 0.9);
-		m_CreatureScaling.insert_or_assign(STAT_TYPE::ARMOR, 0.7);
-		m_CreatureScaling.insert_or_assign(STAT_TYPE::RESISTANCE, 0.7);
+		m_CreatureScaling.insert_or_assign(STAT_TYPE::ARMOR, 0.01);
+		m_CreatureScaling.insert_or_assign(STAT_TYPE::RESISTANCE, 0.01);
 
 		// Offense
 		m_CreatureScaling.insert_or_assign(STAT_TYPE::ATK_POWER, 0.8);
@@ -399,7 +404,7 @@ class Mod : GenericMod {
 		if (creature->entity_data.hostility_type != cube::Creature::EntityBehaviour::Player &&
 			creature->entity_data.hostility_type != cube::Creature::EntityBehaviour::Pet)
 		{
-			*stat *= m_CreatureScaling.at(type) * 0.5 * std::pow(2.7183, 0.2 * GetCreatureLevel(creature)) / 1.21 * std::pow(0.99, 1 + 0.07 * GetCreatureLevel(creature) * GetCreatureLevel(creature));
+			*stat *= m_CreatureScaling.at(type) * (1 + log2f((GetCreatureLevel(creature) + 1001.0f) / 1000.0f) * 1000.0f);
 		
 		}
 	}
@@ -429,6 +434,12 @@ class Mod : GenericMod {
 	}
 
 	virtual void OnCreatureHPCalculated(cube::Creature* creature, float* hp) override {
+
+		if (creature->entity_data.hostility_type != cube::Creature::EntityBehaviour::Player)
+		{
+			SetEquipmentRegion(creature, creature->entity_data.current_region);
+		}
+
 		ApplyStatBuff(creature, hp, STAT_TYPE::HEALTH);
 		ApplyCreatureBuff(creature, hp, STAT_TYPE::HEALTH);
 	}
