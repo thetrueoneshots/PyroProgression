@@ -34,7 +34,10 @@ This is a mod that adds XP when killing enemies, levels and scaling of the playe
 Download the latest version of `PyroProgression_v.x.x.zip` from the latest release from [the release page](https://github.com/thetrueoneshots/PyroProgression/releases). If this `.zip` file includes a `CubeModLoader.fip` you will have to put that file in the same directory as your `cubeworld.exe`. If such a file is not added, you can get the latest modloader release from [the modloader release page](https://github.com/thetrueoneshots/Cube-World-Mod-Launcher/releases). You will have to create a new folder called mods in the folder where your `cubeworld.exe` is located if you do not have one already. You will have to put the `PyroProgression_v.x.x.dll` there. That is all there is to it! Enjoy playing
 
 ## Changelog
-- `[v.1.1]` Add level number formatting and recenter command
+- `[v.1.2]` Multiplayer XP sharing and scaling modifications
+    - XP is now calculated based on the hosts level and enemy levels and divided between all players
+    - Scaling is modified to be non game-breaking
+- `[v.1.1]` Level number formatting and recenter command
     - Levels are now formatted as: `xxx`, `x.xxK` and `x.xxM`.
     - With the command `/recenter` you can recenter the scaling region of the player.
 - `[v.1.0]` First official release for the PyroProgression mod.
