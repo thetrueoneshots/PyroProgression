@@ -38,6 +38,7 @@ Download the latest version of `PyroProgression_v.x.x.zip` from the latest relea
     - Enemy and items range from 1-5 * region distance
     - Player starting stats are lowered
     - Enemy starting stats are lowered
+    - Fixed enemy attacking speed bug
 - `[v.1.2]` Multiplayer XP sharing and scaling modifications
     - XP is now calculated based on the hosts level and enemy levels and divided between all players
     - Scaling is modified to be non game-breaking
