@@ -359,13 +359,13 @@ class Mod : GenericMod {
 
 		// ##### CREATURE ######
 		// Defense
-		m_CreatureScaling.insert_or_assign(STAT_TYPE::HEALTH, 0.9);
+		m_CreatureScaling.insert_or_assign(STAT_TYPE::HEALTH, 2);
 		m_CreatureScaling.insert_or_assign(STAT_TYPE::ARMOR, 0.01);
 		m_CreatureScaling.insert_or_assign(STAT_TYPE::RESISTANCE, 0.01);
 
 		// Offense
-		m_CreatureScaling.insert_or_assign(STAT_TYPE::ATK_POWER, 0.8);
-		m_CreatureScaling.insert_or_assign(STAT_TYPE::SPELL_POWER, 0.8);
+		m_CreatureScaling.insert_or_assign(STAT_TYPE::ATK_POWER, 3);
+		m_CreatureScaling.insert_or_assign(STAT_TYPE::SPELL_POWER, 3);
 		m_CreatureScaling.insert_or_assign(STAT_TYPE::CRIT, 0);
 		m_CreatureScaling.insert_or_assign(STAT_TYPE::HASTE, 0);
 
@@ -395,6 +395,16 @@ class Mod : GenericMod {
 
 		if (creature->id == game->GetPlayer()->id)
 		{
+			switch (type)
+			{
+			case STAT_TYPE::HEALTH:
+				*stat -= 90;
+				break;
+			case STAT_TYPE::ATK_POWER:
+			case STAT_TYPE::SPELL_POWER:
+				*stat -= 4;
+				break;
+			}
 			*stat += m_PlayerScaling.at(type) * creature->entity_data.level;
 		}
 	}
@@ -404,7 +414,7 @@ class Mod : GenericMod {
 		if (creature->entity_data.hostility_type != cube::Creature::EntityBehaviour::Player &&
 			creature->entity_data.hostility_type != cube::Creature::EntityBehaviour::Pet)
 		{
-			*stat *= m_CreatureScaling.at(type) * (1 + log2f((GetCreatureLevel(creature) + 1001.0f) / 1000.0f) * 1000.0f);
+			*stat *= 0.05f * m_CreatureScaling.at(type) * (1 + log2f((GetCreatureLevel(creature) + 1001.0f) / 1000.0f) * 1000.0f);
 		
 		}
 	}

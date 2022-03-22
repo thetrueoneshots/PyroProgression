@@ -22,11 +22,11 @@ This is a mod that adds XP when killing enemies, levels and scaling of the playe
 - On level up, your health will be restored to full.
 - Each level gives extra stats on your health, damage, crit, haste, armor, resistance and stamina.
 - Each region further away from your starting region *(set automatically)* increases the level of creatures and gear there.
-  - The first region has enemies from LV 1 - 10, and each region afterwards has the levels of their creatures increased by 10.
+  - The first region has enemies from LV 1 - 5, and each region afterwards has the levels of their creatures increased by 3.
 - Gear has a level, independent of star rating, which adds stats. A higher level has a higher chance of being better than a lower level, but this does not have to be the case!
 - Gear cost is scaled with region distance.
 - Gold bags give 100 gold base gold and is scaled with region distance.
-- You can only equip gear that is a maximum of 5 levels higher than your current level.
+- You can only equip gear that is a maximum of 0 levels higher than your current level.
 - Gold drops are scaled by enemy level.
 - You can recenter the players region by typing `/recenter` in the chat.
 
@@ -34,6 +34,10 @@ This is a mod that adds XP when killing enemies, levels and scaling of the playe
 Download the latest version of `PyroProgression_v.x.x.zip` from the latest release from [the release page](https://github.com/thetrueoneshots/PyroProgression/releases). If this `.zip` file includes a `CubeModLoader.fip` you will have to put that file in the same directory as your `cubeworld.exe`. If such a file is not added, you can get the latest modloader release from [the modloader release page](https://github.com/thetrueoneshots/Cube-World-Mod-Launcher/releases). You will have to create a new folder called mods in the folder where your `cubeworld.exe` is located if you do not have one already. You will have to put the `PyroProgression_v.x.x.dll` there. That is all there is to it! Enjoy playing
 
 ## Changelog
+- `[v.1.3]` Enemy and player scaling updates
+    - Enemy and items range from 1-5 * region distance
+    - Player starting stats are lowered
+    - Enemy starting stats are lowered
 - `[v.1.2]` Multiplayer XP sharing and scaling modifications
     - XP is now calculated based on the hosts level and enemy levels and divided between all players
     - Scaling is modified to be non game-breaking

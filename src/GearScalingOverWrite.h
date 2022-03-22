@@ -24,16 +24,16 @@ extern "C" float GetGearScaling(cube::Item * item, cube::Creature* creature, int
 	float base_res = ((base * 0.5f) / (float)0x20);
 	float mod_modifier = (mod3 / 0x10624DD3) / 8.0f;
 
-	float X = 1.4;
+	float X = 0.1f;
 
-	float result = X + base_res + mod_modifier;
+	float result = std::abs(X + base_res + mod_modifier);
 
 	cube::Game* game = cube::GetGame();
 	if (game && creature->entity_data.hostility_type == cube::Creature::EntityBehaviour::Player)
 	{
-		result *= 1 + log2f((GetItemLevel(item) + 0.5f * effective_rarity + 1001.0f) / 1000.0f) * 1000.0f;
+		result *= log2f((GetItemLevel(item) + 0.5f * effective_rarity + 1001.0f) / 1000.0f) * 1000.0f;
 	}
-	else if (creature->entity_data.hostility_type == cube::Creature::EntityBehaviour::Hostile)
+	else
 	{
 		result *= 0.1f * (effective_rarity + 1);
 	}
@@ -76,6 +76,10 @@ extern "C" float GetOtherStatsRe(cube::Item * item, cube::Creature * creature)
 			result = std::log2f(result / 0.2f) * 0.2f + 0.2f;
 			result *= randomizer;
 		}
+	}
+	else
+	{
+		result *= 0.01f;
 	}
 	return result;
 }
