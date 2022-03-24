@@ -417,11 +417,11 @@ class Mod : GenericMod {
 			switch (type)
 			{
 			case STAT_TYPE::HEALTH:
-				*stat -= 90;
+				*stat -= 50;
 				break;
 			case STAT_TYPE::ATK_POWER:
 			case STAT_TYPE::SPELL_POWER:
-				*stat -= 4;
+				*stat -= 2;
 				break;
 			}
 			*stat += m_PlayerScaling.at(type) * creature->entity_data.level;
@@ -433,7 +433,7 @@ class Mod : GenericMod {
 		if (creature->entity_data.hostility_type != cube::Creature::EntityBehaviour::Player &&
 			creature->entity_data.hostility_type != cube::Creature::EntityBehaviour::Pet)
 		{
-			*stat *= 0.05f * m_CreatureScaling.at(type) * (1 + log2f((GetCreatureLevel(creature) + 1001.0f) / 1000.0f) * 1000.0f);
+			*stat *= 0.05f * (1 + m_CreatureScaling.at(type)) * (1 + log2f((GetCreatureLevel(creature) + 1001.0f) / 1000.0f) * 1000.0f);
 		
 		}
 	}

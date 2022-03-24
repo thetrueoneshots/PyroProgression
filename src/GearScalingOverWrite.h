@@ -24,7 +24,7 @@ extern "C" float GetGearScaling(cube::Item * item, cube::Creature* creature, int
 	float base_res = ((base * 0.5f) / (float)0x20);
 	float mod_modifier = (mod3 / 0x10624DD3) / 8.0f;
 
-	float X = 0.1f;
+	float X = 0.5f;
 
 	float result = std::abs(X + base_res);
 
@@ -35,7 +35,7 @@ extern "C" float GetGearScaling(cube::Item * item, cube::Creature* creature, int
 	}
 	else
 	{
-		result *= 0.1f * (effective_rarity + 1);
+		result *= (effective_rarity + mod_modifier + 1);
 	}
 	
 	return result;
