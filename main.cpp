@@ -94,13 +94,32 @@ class Mod : GenericMod {
 		{
 			cube::Game* game = cube::GetGame();
 			cube::Creature* player = game->GetPlayer();
+
 			if (!player)
 			{
 				game->PrintMessage(L"[Error] No local player found!\n", 255, 0, 0);
 				return 1;
 			}
 
+			// Set new center region
 			player->entity_data.equipment.unk_item.region = player->entity_data.current_region;
+
+			// Reset HP of all creatures
+			for (cube::Creature* creature : game->world->creatures)
+			{
+				if (creature->entity_data.hostility_type == cube::Creature::EntityBehaviour::Player)
+				{
+					// To ensure that this command is not misused as a full heal
+					creature->entity_data.HP = std::min<float>(creature->GetMaxHP(), creature->entity_data.HP);
+				}
+				else
+				{
+					creature->entity_data.HP = creature->GetMaxHP();
+				}
+				
+			}
+
+			// Display succes message
 			game->PrintMessage(L"[Notification] Correctly recentered player region.\n", 0, 255, 0);
 			return 1;
 		}
