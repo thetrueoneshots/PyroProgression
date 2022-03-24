@@ -259,7 +259,7 @@ class Mod : GenericMod {
 			const static float multiplier = 1.0f / (LEVELS_PER_REGION + 1.0f);
 			cube::Creature* player = game->GetPlayer();
 
-			int xp_gain = 100 * stars;
+			int xp_gain = stars;
 
 			if (player->entity_data.level > GetCreatureLevel(creature)) {
 				xp_gain *= std::pow((float)level / (float)player->entity_data.level, 3);
