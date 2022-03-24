@@ -259,7 +259,7 @@ class Mod : GenericMod {
 			const static float multiplier = 1.0f / (LEVELS_PER_REGION + 1.0f);
 			cube::Creature* player = game->GetPlayer();
 
-			int xp_gain = stars;
+			float xp_gain = stars;
 
 			if (player->entity_data.level > GetCreatureLevel(creature)) {
 				xp_gain *= std::pow((float)level / (float)player->entity_data.level, 3);
@@ -293,7 +293,7 @@ class Mod : GenericMod {
 				BytesIO bytesio;
 
 				bytesio.Write<u32>(0x01); //Packet ID
-				bytesio.Write<u32>(xp_gain / game->host.connections.size()); //Message size
+				bytesio.Write<u32>((int)(xp_gain / game->host.connections.size())); //Message size
 
 				for (auto& conn : game->host.connections)
 				{
