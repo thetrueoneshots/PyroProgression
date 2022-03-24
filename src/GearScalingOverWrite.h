@@ -31,11 +31,11 @@ extern "C" float GetGearScaling(cube::Item * item, cube::Creature* creature, int
 	cube::Game* game = cube::GetGame();
 	if (game && creature->entity_data.hostility_type == cube::Creature::EntityBehaviour::Player)
 	{
-		result *= log2f((GetItemLevel(item) + 0.5f * (effective_rarity + mod_modifier) + 1001.0f) / 1000.0f) * 1000.0f;
+		result *= log2f((GetItemLevel(item) + 3 * (effective_rarity + mod_modifier) + 1001.0f) / 1000.0f) * 1000.0f;
 	}
 	else
 	{
-		result *= (effective_rarity + mod_modifier + 1);
+		result *= 3 * (effective_rarity + mod_modifier + 1);
 	}
 	
 	return result;
