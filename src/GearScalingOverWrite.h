@@ -20,7 +20,7 @@ extern "C" float GetGearScaling(cube::Item * item, cube::Creature* creature, int
 	int mod2 = mod1 ^ (mod1 >> 0x11);
 	int mod3 = mod2 ^ (mod2 << 0x05);
 
-	int effective_rarity = item->GetEffectiveRarity(&region);
+	int effective_rarity = item->GetEffectiveRarity(&region) + 1;
 	float base_res = ((base * 0.5f) / (float)0x20);
 	float mod_modifier = (mod3 / 0x10624DD3) / 8.0f;
 
@@ -59,7 +59,7 @@ extern "C" float GetOtherStatsRe(cube::Item * item, cube::Creature * creature)
 	int mod2 = mod1 ^ (mod1 >> 0x11);
 	int mod3 = mod2 ^ (mod2 << 0x05);
 
-	int effective_rarity = item->GetEffectiveRarity(&region);
+	int effective_rarity = item->GetEffectiveRarity(&region) + 1;
 	float mod_modifier = (mod3 / 0x10624DD3) / 7.0f;
 	float randomizer = 2 * PyroRand(mod3) / 32768;
 
@@ -68,19 +68,14 @@ extern "C" float GetOtherStatsRe(cube::Item * item, cube::Creature * creature)
 
 	float result = std::powf(X, Y);
 
+	
 	cube::Game* game = cube::GetGame();
 	if (game && creature->entity_data.hostility_type == cube::Creature::EntityBehaviour::Player)
 	{
 		result *= 0.01f + 0.0016f * GetItemLevel(item);
-		if (result > 0.2f) {
-			result = std::log2f(result / 0.2f) * 0.2f + 0.2f;
-			result *= randomizer;
-		}
 	}
-	else
-	{
-		result *= 0.01f;
-	}
+
+	result *= 0.1f;
 	return result;
 }
 
@@ -93,7 +88,7 @@ extern "C" float GetHasteRe(cube::Item * item, cube::Creature * creature) {
 		return 0;
 	}
 
-	return GetOtherStatsRe(item, creature) * (PyroRand(item->modifier) / 32768.0f);
+	return GetOtherStatsRe(item, creature) * (1 + PyroRand(item->modifier) / 32768.0f);
 }
 
 extern "C" float GetRegenRe(cube::Item * item, cube::Creature * creature) {
@@ -104,7 +99,7 @@ extern "C" float GetRegenRe(cube::Item * item, cube::Creature * creature) {
 		return 0;
 	}
 
-	return GetOtherStatsRe(item, creature) * (PyroRand(item->modifier + 0x157) / 32768.0f);
+	return GetOtherStatsRe(item, creature) * (1 + PyroRand(item->modifier + 0x157) / 32768.0f);
 }
 
 extern "C" float GetCritRe(cube::Item * item, cube::Creature * creature) {
@@ -115,7 +110,7 @@ extern "C" float GetCritRe(cube::Item * item, cube::Creature * creature) {
 		return 0;
 	}
 
-	return GetOtherStatsRe(item, creature) * (PyroRand(item->modifier + 0x99) / 32768.0f);
+	return GetOtherStatsRe(item, creature)* (1 + PyroRand(item->modifier + 0x99) / 32768.0f);
 }
 
 extern "C" float GearScaling(float x, float y, cube::Item* item)
