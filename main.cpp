@@ -302,6 +302,7 @@ class Mod : GenericMod {
 		if (category >= 3 && category <= 9)
 		{
 			*price *= GetItemLevel(item);
+			*price *= *price;
 		}
 
 		if (category == 15)
