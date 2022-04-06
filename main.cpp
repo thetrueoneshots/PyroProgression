@@ -227,6 +227,7 @@ class Mod : GenericMod {
 		return;
 	}
 
+	// Called for the host only
 	virtual void OnCreatureDeath(cube::Game* game, cube::Creature* creature, cube::Creature* attacker) override {
 		if (creature == nullptr)
 		{
@@ -254,19 +255,11 @@ class Mod : GenericMod {
 		if (attacker->entity_data.hostility_type == cube::Creature::EntityBehaviour::Player ||
 			attacker->entity_data.hostility_type == cube::Creature::EntityBehaviour::Pet)
 		{
-			int level = GetCreatureLevel(creature) + 1;
+			int level = GetCreatureLevel(creature);
 			int stars = creature->entity_data.level + 1;
-			const static float multiplier = 1.0f / (LEVELS_PER_REGION + 1.0f);
 			cube::Creature* player = game->GetPlayer();
 
-			float xp_gain = stars;
-
-			if (player->entity_data.level > GetCreatureLevel(creature)) {
-				xp_gain *= std::pow((float)level / (float)player->entity_data.level, 3);
-			}
-			else {
-				xp_gain *= (1 + multiplier * (GetCreatureLevel(creature) - player->entity_data.level)) * std::powf(1.05f, GetCreatureLevel(creature) - player->entity_data.level);
-			}
+			float xp_gain = level * stars;
 
 			if ((creature->entity_data.appearance.flags2 & (1 << (int)cube::Creature::AppearanceModifiers::IsBoss)) != 0)
 			{

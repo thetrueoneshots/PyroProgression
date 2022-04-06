@@ -4,9 +4,7 @@
 
 extern "C" int XP_Overwrite(int level)
 {
-	//return (1050 * level - 50) / (level + 19);
-	//return 50 * std::powf(level + 1, 1.3f);
-	return 50 + 4*level;
+	return 50 * (1 + std::powf(level, 1.3f));
 }
 
 __attribute__((naked)) void ASM_XP_Overwrite() {
