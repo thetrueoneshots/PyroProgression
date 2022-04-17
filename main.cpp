@@ -11,6 +11,7 @@
 #include "src/LevelDisplayOverwrite.h"
 #include "src/GearScalingOverWrite.h"
 #include "src/GoldDropOverWrite.h"
+#include "src/RegionTextDrawOverwrite.h"
 
 void OnLevelUp(cube::Game* game, cube::Creature* creature)
 {
@@ -224,6 +225,24 @@ class Mod : GenericMod {
 			}
 		}
 
+		// ### Set region text: not working since it is reset before drawing... ###
+
+		/*IntVector2 region = player->entity_data.current_region;
+		int seed = ((int (*)(int, int))CWOffset(0x2FF5C0))(region.x, region.y); // Get some seed
+		std::wstring region_name;
+		((void (*)(std::wstring*, int, int))CWOffset(0x611D0))(&region_name, seed, -1);
+
+		int biome_type = game->world->GetRegionBiomeType(region.x, region.y);
+		std::wstring region_type;
+		game->speech.GetBiomeName(&region_type, biome_type);
+
+		wchar_t buffer[250];
+
+		swprintf_s(buffer, 250, L"LV. 5 %ws", region_type.c_str());
+
+		std::wstring text(buffer);
+		game->gui.info_node_1->SetText(&text);
+		*/
 		return;
 	}
 
@@ -353,6 +372,7 @@ class Mod : GenericMod {
 		Setup_XP_Overwrite();
 		Setup_LevelDisplayOverwrite();
 		Setup_GearScalingOverwrite();
+		Setup_RegionTextDrawOverwrite();
 
 		// ##### PLAYER ######
 		// Defense
